@@ -62,3 +62,16 @@ def buyHandler():
                 amount -= qty
             print("amount: " + str(amount))
     return {"remainder": amount}
+
+@app.route("/userCertificates", methods=['GET'])
+def userCertsHandler():
+    user = request.args.get(("user"))
+    certs = certificate_collection.find(
+        {"owner": user}
+    )
+    print(certs)
+    list = []
+    for cert in certs:
+        cert["_id"]= str(cert["_id"])
+        list.append(cert)
+    return {"list": list}
