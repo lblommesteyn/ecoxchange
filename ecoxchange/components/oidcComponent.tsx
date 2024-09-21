@@ -2,13 +2,15 @@
 import React from "react";
 
 export function OidcComponent() {
+    var code;
     React.useEffect(()=> {
         console.log("useeffect")
+        const urlParams = new URLSearchParams(window.location.search);
+    code = urlParams.get('code');
     }, [])
 
     // const link = window.location.href
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    
 
     const params = new URLSearchParams({
         // redirect_uri: `https://230496154.propelauthtest.com`,
