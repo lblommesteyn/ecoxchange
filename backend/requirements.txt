@@ -15,6 +15,7 @@ dnspython==2.6.1
     #   -r requirements.in
     #   pymongo
 flask==3.0.3
+flask-cors==3.1.1
     # via
     #   -r requirements.in
     #   flask-pymongo
