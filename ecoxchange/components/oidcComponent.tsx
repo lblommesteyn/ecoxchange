@@ -2,7 +2,7 @@
 import React from "react";
 
 export function OidcComponent() {
-    var code;
+    let code;
     React.useEffect(()=> {
         console.log("useeffect")
         const urlParams = new URLSearchParams(window.location.search);
