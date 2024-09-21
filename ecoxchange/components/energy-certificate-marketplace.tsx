@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { AlertCircle, Upload, Search, DollarSign, Zap, Sun, Wind } from "lucide-react"
+import { AlertCircle, Upload, Search, DollarSign, Zap, Sun, Wind, LogIn } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Toggle } from "@/components/ui/toggle"
 import { Progress } from "@/components/ui/progress"
 
 export function EnergyCertificateMarketplaceComponent() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isBuyerView, setIsBuyerView] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -18,6 +19,10 @@ export function EnergyCertificateMarketplaceComponent() {
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [balance, setBalance] = useState(1000) // Initial balance
+
+  const handleSignIn = () => {
+    setIsAuthenticated(true)
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -51,7 +56,7 @@ export function EnergyCertificateMarketplaceComponent() {
       const result = await response.json()
       setEvaluation(result)
       setBalance(prevBalance => prevBalance + result.payout) // Add payout to balance
-    } catch {
+    } catch (error) {
       setError("An error occurred while uploading the document. Please try again.")
     } finally {
       setUploading(false)
@@ -68,6 +73,37 @@ export function EnergyCertificateMarketplaceComponent() {
     // Simulating a purchase
     const purchaseAmount = 100
     setBalance(prevBalance => prevBalance - purchaseAmount)
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 flex items-center justify-center">
+        <Card className="w-full max-w-md bg-white shadow-lg border-t-4 border-green-500">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center text-green-600">Welcome to the Energy Certificate Marketplace</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-center text-gray-600">
+              Our platform allows you to buy and sell renewable energy certificates with ease. 
+              Join us in promoting sustainable energy practices and supporting green initiatives.
+            </p>
+            <ul className="list-disc list-inside text-gray-600 space-y-2">
+              <li>Buy renewable energy certificates from verified sources</li>
+              <li>Sell your own renewable energy certificates</li>
+              <li>Track your balance and transactions</li>
+              <li>Contribute to a greener future</li>
+            </ul>
+            <Button 
+              onClick={handleSignIn} 
+              className="w-full bg-green-500 hover:bg-green-600 text-white"
+            >
+              <LogIn className="w-4 h-4 mr-2" />
+              Sign In to Get Started
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
