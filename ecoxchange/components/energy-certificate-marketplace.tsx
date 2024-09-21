@@ -9,6 +9,10 @@ import { AlertCircle, Upload, Search, DollarSign, Zap, Sun, Wind, LogIn } from "
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Toggle } from "@/components/ui/toggle"
 import { Progress } from "@/components/ui/progress"
+// import { WithAuthInfoProps, withAuthInfo } from '@propelauth/react'
+import { withAuthInfo } from '@propelauth/react'
+import { useEffect } from 'react'
+import cors from 'cors';
 
 export function EnergyCertificateMarketplaceComponent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -21,8 +25,59 @@ export function EnergyCertificateMarketplaceComponent() {
   const [balance, setBalance] = useState(1000) // Initial balance
 
   const handleSignIn = () => {
+    // const express = require('express')
+    // const app = express()
+
+    // app.use(cors({
+    //   origin: 'http://127.0.0.1:3000',
+
+    // }))
+    // async function whoAmI(accessToken) {
+    
+    const params = new URLSearchParams({
+      redirect_uri: `https://auth.ecoxchange.live/oidc`,
+      client_id: `230496154`,
+      response_type: `code`,
+      state: `hello`,
+    });
+    
+    const url = `https://auth.ecoxchange.live/propelauth/oauth/authorize?${params.toString()}`;
+
+    // window.location.href = url;
+    window.open(url, '_blank');
+
+    // return fetch(url, {
+    //     method: 'GET',
+    //     mode: `no-cors`,
+    //     headers: {
+    //     //   redirect_uri: `http://localhost:3000`,
+    //     //   client_id: `230496154`,
+
+    //     //   response_type: `code`,
+    //     //   state: `state`,
+    //       'Access-Control-Allow-Origin': `https://auth.ecoxchange.live`,
+    //       'Access-Control-Allow-Credentials': `true`
+    //     },
+    // }).then((res) => res.json())
+
+    
+
+    // const [serverResponse, setServerResponse] = useState(undefined)
+
+    // useEffect(() => {
+    //     whoAmI(props.accessToken).then(setServerResponse)
+    // }, [props.accessToken])
+
+    // return (
+    //   <div>
+    //       <b>Server Response:</b>
+    //       <pre>{JSON.stringify(serverResponse, null, 2)}</pre>
+    //   </div>
+    // )
     setIsAuthenticated(true)
   }
+
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
