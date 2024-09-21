@@ -1,9 +1,13 @@
 from flask import Flask, request, json
 from propelauth_flask import init_auth, current_user
+from flask-cors import CORS
+
 
 
 app = Flask(__name__)
 auth = init_auth("https://230496154.propelauthtest.com", "8ed3cf2affddf425392918411ca85454d1228d9c0a31272a61dc230f1de2d92070693106ccd1e130a154e8649d934c40")
+
+CORS(app)
 
 @app.route("/")
 @auth.require_user
