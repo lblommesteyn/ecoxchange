@@ -1,2 +1,4 @@
 Flask
-flask-mongoengine
+flask_pymongo
+dnspython
+certifi

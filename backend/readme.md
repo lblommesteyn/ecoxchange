@@ -4,5 +4,5 @@
 $$$
 python3 -m venv .venv
 . .venv/bin/activate
-pip install requirements.txt
+pyhton3 -m pip install -r requirements.txt
 $$$
