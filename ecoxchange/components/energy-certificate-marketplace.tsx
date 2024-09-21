@@ -35,26 +35,28 @@ export function EnergyCertificateMarketplaceComponent() {
     // async function whoAmI(accessToken) {
     
     const params = new URLSearchParams({
-      redirect_uri: `https://230496154.propelauthtest.com`,
+      redirect_uri: `https://auth.ecoxchange.live/oidc`,
       client_id: `230496154`,
       response_type: `code`,
-      state: `state`,
+      state: `hello`,
     });
     
-    const url = `https://230496154.propelauthtest.com/propelauth/oauth/authorize?${params.toString()}`;
+    const url = `https://auth.ecoxchange.live/propelauth/oauth/authorize?${params.toString()}`;
 
-    window.location.href = url;
+    // window.location.href = url;
+    window.open(url, '_blank');
+
     // return fetch(url, {
     //     method: 'GET',
     //     mode: `no-cors`,
-        
     //     headers: {
     //     //   redirect_uri: `http://localhost:3000`,
     //     //   client_id: `230496154`,
 
     //     //   response_type: `code`,
     //     //   state: `state`,
-    //       'Access-Control-Allow-Origin': `*`,
+    //       'Access-Control-Allow-Origin': `https://auth.ecoxchange.live`,
+    //       'Access-Control-Allow-Credentials': `true`
     //     },
     // }).then((res) => res.json())
 
