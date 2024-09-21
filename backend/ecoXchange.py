@@ -1,8 +1,12 @@
 from flask import Flask, request, json
+from propelauth_flask import init_auth, current_user
+
 
 app = Flask(__name__)
+auth = init_auth("https://230496154.propelauthtest.com", "8ed3cf2affddf425392918411ca85454d1228d9c0a31272a61dc230f1de2d92070693106ccd1e130a154e8649d934c40")
 
 @app.route("/")
+@auth.require_user
 def hello_world():
     return "<p>Hello, World!</p>" 
 
@@ -11,13 +15,14 @@ from mongo import certificate_collection
 
 
 @app.route("/certificate", methods=['POST','GET'])
+@auth.require_user
 def certificateHandler():
     if(request.method == 'POST'):
         body = json.loads(request.data)
         print(body)
         certificate_collection.insert_one({
             "type": body.get("type"),
-            "owner": body.get("owner"),
+            "owner": body.get(current_user),
             "qty": body.get("qty")
         })
         return "Success"
@@ -64,10 +69,10 @@ def buyHandler():
     return {"remainder": amount}
 
 @app.route("/userCertificates", methods=['GET'])
+@auth.require_user
 def userCertsHandler():
-    user = request.args.get(("user"))
     certs = certificate_collection.find(
-        {"owner": user}
+        {"owner": current_user}
     )
     print(certs)
     list = []
