@@ -13,28 +13,21 @@ export function OidcComponent() {
     
 
     const params = new URLSearchParams({
-        // redirect_uri: `https://230496154.propelauthtest.com`,
-        client_id: `230496154`,
+        redirect_uri: 'https://ecoxchange.live/oidc',
+        client_id: `e51618d73ab9c59f5bd04cda1f667e17`,
         code: code!,
         grant_type: `authorization_code`,
-        state: `state`,
     });
     
-    const url = `https://auth.ecoxchange.live/propelauth/oauth/token?${params.toString()}`;
+    const url = `https://auth.ecoxchange.live/propelauth/oauth/token`;
 
     fetch(url, {
-        method: 'POST',
-        mode: `no-cors`,
-        
+        method: 'POST',        
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-        //   redirect_uri: `http://localhost:3000`,
-        //   client_id: `230496154`,
-
-        //   response_type: `code`,
-        //   state: `state`,
-            // 'Access-Control-Allow-Origin': `*`,
+          Authorization: 'e51618d73ab9c59f5bd04cda1f667e17:a795ac52652d190ab8a0162809d9cbec4e69cae133668831b8db76fccba10f1ec0b641260e2cba9efcf654d463b6dc39'
         },
+        body: params
     }).then(async (res) => {
         const data = await res.json();
         const refreshToken = data["refresh_token"]
