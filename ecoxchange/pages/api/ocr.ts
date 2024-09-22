@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Tesseract from 'tesseract.js';
-import formidable from "formidable";
+//import formidable from "formidable";
 import fs from 'fs';
 import { Cerebras } from '@cerebras/cerebras_cloud_sdk';
 
@@ -9,7 +9,7 @@ export const config = {
     bodyParser: false,
   },
 };
-
+/* 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const form = formidable({});
@@ -72,4 +72,4 @@ const getDocumentDetails = async (text: string): Promise<{ type: string, value: 
   };
 };
 
-export default handler;
+export default handler; */
