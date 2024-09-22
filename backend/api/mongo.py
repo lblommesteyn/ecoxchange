@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_pymongo import pymongo
-from ecoXchange import app
+from backend.api.ecoXchange import app
 from certifi import where
 
 CONNECTION_STRING = "mongodb+srv://justinhltzemail:pennApps@ecoexchange.ngho8.mongodb.net/?retryWrites=true&w=majority&appName=EcoExchange"
