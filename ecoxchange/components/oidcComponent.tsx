@@ -7,11 +7,6 @@ export function OidcComponent() {
         console.log("useeffect")
         const urlParams = new URLSearchParams(window.location.search);
     code = urlParams.get('code');
-    }, [])
-
-    // const link = window.location.href
-    
-
     const params = new URLSearchParams({
         redirect_uri: 'https://ecoxchange.live/oidc',
           client_id: `e51618d73ab9c59f5bd04cda1f667e17`,
@@ -27,7 +22,7 @@ export function OidcComponent() {
             'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: 'e51618d73ab9c59f5bd04cda1f667e17:a795ac52652d190ab8a0162809d9cbec4e69cae133668831b8db76fccba10f1ec0b641260e2cba9efcf654d463b6dc39'
         },
-        // body: params
+        body: params
     }).then(async (res) => {
         const data = await res.json();
         const refreshToken = data["refresh_token"]
@@ -38,6 +33,12 @@ export function OidcComponent() {
         localStorage.setItem("accessToken", accessToken)
         localStorage.setItem("expiresIn", expiresIn.toString())
     })
+    }, [])
+
+    // const link = window.location.href
+    
+
+
 
     return (<p>You have signed in. You may close the tab</p>)
 }
