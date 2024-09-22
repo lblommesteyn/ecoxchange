@@ -1,6 +1,6 @@
 from flask import Flask, request, json
-from propelauth_flask import init_auth, current_user
-from flask-cors import CORS
+from propelauth_flask import init_auth
+from flask_cors import CORS
 
 
 
@@ -24,7 +24,7 @@ def certificateHandler():
         print(body)
         certificate_collection.insert_one({
             "type": body.get("type"),
-            "owner": body.get(current_user),
+            "owner": body.get("user"),
             "qty": body.get("qty")
         })
         return "Success"
@@ -72,8 +72,9 @@ def buyHandler():
 
 @app.route("/userCertificates", methods=['GET'])
 def userCertsHandler():
+    user = request.args.get("user")
     certs = certificate_collection.find(
-        {"owner": current_user}
+        {"owner": user}
     )
     print(certs)
     list = []
