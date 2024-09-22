@@ -10,7 +10,6 @@ auth = init_auth("https://230496154.propelauthtest.com", "8ed3cf2affddf425392918
 CORS(app)
 
 @app.route("/")
-@auth.require_user
 def hello_world():
     return "<p>Hello, World!</p>" 
 
@@ -19,7 +18,6 @@ from mongo import certificate_collection
 
 
 @app.route("/certificate", methods=['POST','GET'])
-@auth.require_user
 def certificateHandler():
     if(request.method == 'POST'):
         body = json.loads(request.data)
@@ -73,7 +71,6 @@ def buyHandler():
     return {"remainder": amount}
 
 @app.route("/userCertificates", methods=['GET'])
-@auth.require_user
 def userCertsHandler():
     certs = certificate_collection.find(
         {"owner": current_user}
