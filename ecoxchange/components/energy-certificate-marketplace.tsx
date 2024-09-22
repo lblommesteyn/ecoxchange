@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Toggle } from "@/components/ui/toggle";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+
 export function EnergyCertificateMarketplaceComponent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isBuyerView, setIsBuyerView] = useState(false);
@@ -17,58 +19,71 @@ export function EnergyCertificateMarketplaceComponent() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [balance, setBalance] = useState(1000); // Initial balance
+
   const [certificates, setCertificates] = useState([
     { type: 'SREC', name: 'Solar Renewable Energy Certificate', color: 'yellow', count: 50, price: 10, toBuy: 0 },
     { type: 'LCF', name: 'Low Carbon Fuel Certificate', color: 'green', count: 30, price: 15, toBuy: 0 },
     { type: 'AEC', name: 'Alternative Energy Certificate', color: 'blue', count: 20, price: 20, toBuy: 0 },
   ]);
+
   const [purchasedCertificates, setPurchasedCertificates] = useState<Array<{ type: string, name: string, count: number }>>([]);
+
   const handleSignIn = () => {
     setIsAuthenticated(true);
   };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setFile(e.target.files[0]);
     }
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) {
-      setError("Please select a file to upload.");
-      return;
-    }
     setUploading(true);
     setError(null);
-    const formData = new FormData();
-    formData.append('document', file);
-    try {
-      const response = await fetch('/api/ocr', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error('Upload failed');
+
+    // Simulate upload delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Always show successful upload and add 1 SREC
+    setEvaluation({ type: 'SREC', value: 10 });
+    setBalance(prevBalance => prevBalance + 10);
+    setCertificates(prevCerts => 
+      prevCerts.map(cert => 
+        cert.type === 'SREC' 
+          ? { ...cert, count: cert.count + 1 } 
+          : cert
+      )
+    );
+    setPurchasedCertificates(prevPurchased => {
+      const existingPurchase = prevPurchased.find(p => p.type === 'SREC');
+      if (existingPurchase) {
+        return prevPurchased.map(p => 
+          p.type === 'SREC' ? { ...p, count: p.count + 1 } : p
+        );
+      } else {
+        return [...prevPurchased, { type: 'SREC', name: 'Solar Renewable Energy Certificate', count: 1 }];
       }
-      const result = await response.json();
-      setEvaluation(result);
-      setBalance(prevBalance => prevBalance + result.value); // Add value to balance
-    } catch (error) {
-      setError("An error occurred while uploading the document. Please try again.");
-    } finally {
-      setUploading(false);
-    }
+    });
+
+    setUploading(false);
+    setFile(null);
   };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // Implement search functionality here
     console.log("Searching for:", searchQuery);
   };
+
   const handlePurchase = (certType: string) => {
     setCertificates(prevCerts => prevCerts.map(cert => {
       if (cert.type === certType) {
         const newCount = Math.max(0, cert.count - cert.toBuy);
         const cost = cert.toBuy * cert.price;
         setBalance(prevBalance => prevBalance - cost);
+
         // Update purchased certificates
         setPurchasedCertificates(prevPurchased => {
           const existingPurchase = prevPurchased.find(p => p.type === cert.type);
@@ -80,11 +95,13 @@ export function EnergyCertificateMarketplaceComponent() {
             return [...prevPurchased, { type: cert.type, name: cert.name, count: cert.toBuy }];
           }
         });
+
         return { ...cert, count: newCount, toBuy: 0 };
       }
       return cert;
     }));
   };
+
   const handleSliderChange = (certType: string, newValue: number[]) => {
     setCertificates(prevCerts => prevCerts.map(cert => {
       if (cert.type === certType) {
@@ -93,6 +110,7 @@ export function EnergyCertificateMarketplaceComponent() {
       return cert;
     }));
   };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 flex items-center justify-center">
@@ -122,6 +140,7 @@ export function EnergyCertificateMarketplaceComponent() {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100">
       <div className="container mx-auto px-4 py-8">
@@ -137,6 +156,7 @@ export function EnergyCertificateMarketplaceComponent() {
               {isBuyerView ? "Buyer View" : "Seller View"}
             </Toggle>
           </div>
+
           <Card className="mb-8 bg-white shadow-lg border-t-4 border-green-500">
             <CardHeader>
               <CardTitle className="flex items-center text-green-600">
@@ -148,6 +168,7 @@ export function EnergyCertificateMarketplaceComponent() {
               <Progress value={(balance / 2000) * 100} className="mt-2 h-2 bg-green-200" />
             </CardContent>
           </Card>
+
           {isBuyerView ? (
             <>
               <Card className="mb-8 bg-white shadow-lg border-t-4 border-blue-500">
@@ -206,6 +227,7 @@ export function EnergyCertificateMarketplaceComponent() {
                   </div>
                 </CardContent>
               </Card>
+
               <Card className="bg-white shadow-lg border-t-4 border-purple-500">
                 <CardHeader>
                   <CardTitle className="flex items-center text-purple-600">
