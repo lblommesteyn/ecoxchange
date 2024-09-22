@@ -1,135 +1,98 @@
-"use client"
-
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { AlertCircle, Upload, Search, DollarSign, Zap, Sun, Wind, LogIn } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Toggle } from "@/components/ui/toggle"
-import { Progress } from "@/components/ui/progress"
-// import { WithAuthInfoProps, withAuthInfo } from '@propelauth/react'
-import { withAuthInfo } from '@propelauth/react'
-import { useEffect } from 'react'
-import cors from 'cors';
-
+"use client";
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Toggle } from "@/components/ui/toggle";
+import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 export function EnergyCertificateMarketplaceComponent() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isBuyerView, setIsBuyerView] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const [evaluation, setEvaluation] = useState<{ type: string, payout: number } | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [balance, setBalance] = useState(1000) // Initial balance
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isBuyerView, setIsBuyerView] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [evaluation, setEvaluation] = useState<{ type: string, value: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [balance, setBalance] = useState(1000); // Initial balance
+  const [certificates, setCertificates] = useState([
+    { type: 'SREC', name: 'Solar Renewable Energy Certificate', color: 'yellow', count: 50, price: 10, toBuy: 0 },
+    { type: 'LCF', name: 'Low Carbon Fuel Certificate', color: 'green', count: 30, price: 15, toBuy: 0 },
+    { type: 'AEC', name: 'Alternative Energy Certificate', color: 'blue', count: 20, price: 20, toBuy: 0 },
+  ]);
+  const [purchasedCertificates, setPurchasedCertificates] = useState<Array<{ type: string, name: string, count: number }>>([]);
   const handleSignIn = () => {
-    // const express = require('express')
-    // const app = express()
-
-    // app.use(cors({
-    //   origin: 'http://127.0.0.1:3000',
-
-    // }))
-    // async function whoAmI(accessToken) {
-    
-    const params = new URLSearchParams({
-      redirect_uri: `https://ecoxchange.live/oidc`,
-      client_id: `e51618d73ab9c59f5bd04cda1f667e17`,
-      response_type: `code`,
-      state: `hello`,
-    });
-    
-    const url = `https://auth.ecoxchange.live/propelauth/oauth/authorize?${params.toString()}`;
-
-    // window.location.href = url;
-    window.open(url, '_blank');
-
-    // return fetch(url, {
-    //     method: 'GET',
-    //     mode: `no-cors`,
-    //     headers: {
-    //     //   redirect_uri: `http://localhost:3000`,
-    //     //   client_id: `230496154`,
-
-    //     //   response_type: `code`,
-    //     //   state: `state`,
-    //       'Access-Control-Allow-Origin': `https://auth.ecoxchange.live`,
-    //       'Access-Control-Allow-Credentials': `true`
-    //     },
-    // }).then((res) => res.json())
-
-    
-
-    // const [serverResponse, setServerResponse] = useState(undefined)
-
-    // useEffect(() => {
-    //     whoAmI(props.accessToken).then(setServerResponse)
-    // }, [props.accessToken])
-
-    // return (
-    //   <div>
-    //       <b>Server Response:</b>
-    //       <pre>{JSON.stringify(serverResponse, null, 2)}</pre>
-    //   </div>
-    // )
-    setIsAuthenticated(true)
-  }
-
-
-
+    setIsAuthenticated(true);
+  };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFile(e.target.files[0])
+      setFile(e.target.files[0]);
     }
-  }
-
+  };
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!file) {
-      setError("Please select a file to upload.")
-      return
+      setError("Please select a file to upload.");
+      return;
     }
-
-    setUploading(true)
-    setError(null)
-
-    const formData = new FormData()
-    formData.append('document', file)
-
+    setUploading(true);
+    setError(null);
+    const formData = new FormData();
+    formData.append('document', file);
     try {
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/ocr', {
         method: 'POST',
         body: formData,
-      })
-
+      });
       if (!response.ok) {
-        throw new Error('Upload failed')
+        throw new Error('Upload failed');
       }
-
-      const result = await response.json()
-      setEvaluation(result)
-      setBalance(prevBalance => prevBalance + result.payout) // Add payout to balance
+      const result = await response.json();
+      setEvaluation(result);
+      setBalance(prevBalance => prevBalance + result.value); // Add value to balance
     } catch (error) {
-      setError("An error occurred while uploading the document. Please try again.")
+      setError("An error occurred while uploading the document. Please try again.");
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
-
+  };
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Implement search functionality here
-    console.log("Searching for:", searchQuery)
-  }
-
-  const handlePurchase = () => {
-    // Simulating a purchase
-    const purchaseAmount = 100
-    setBalance(prevBalance => prevBalance - purchaseAmount)
-  }
-
+    console.log("Searching for:", searchQuery);
+  };
+  const handlePurchase = (certType: string) => {
+    setCertificates(prevCerts => prevCerts.map(cert => {
+      if (cert.type === certType) {
+        const newCount = Math.max(0, cert.count - cert.toBuy);
+        const cost = cert.toBuy * cert.price;
+        setBalance(prevBalance => prevBalance - cost);
+        // Update purchased certificates
+        setPurchasedCertificates(prevPurchased => {
+          const existingPurchase = prevPurchased.find(p => p.type === cert.type);
+          if (existingPurchase) {
+            return prevPurchased.map(p => 
+              p.type === cert.type ? { ...p, count: p.count + cert.toBuy } : p
+            );
+          } else {
+            return [...prevPurchased, { type: cert.type, name: cert.name, count: cert.toBuy }];
+          }
+        });
+        return { ...cert, count: newCount, toBuy: 0 };
+      }
+      return cert;
+    }));
+  };
+  const handleSliderChange = (certType: string, newValue: number[]) => {
+    setCertificates(prevCerts => prevCerts.map(cert => {
+      if (cert.type === certType) {
+        return { ...cert, toBuy: newValue[0] };
+      }
+      return cert;
+    }));
+  };
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 flex items-center justify-center">
@@ -152,15 +115,13 @@ export function EnergyCertificateMarketplaceComponent() {
               onClick={handleSignIn} 
               className="w-full bg-green-500 hover:bg-green-600 text-white"
             >
-              <LogIn className="w-4 h-4 mr-2" />
               Sign In to Get Started
             </Button>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100">
       <div className="container mx-auto px-4 py-8">
@@ -176,11 +137,9 @@ export function EnergyCertificateMarketplaceComponent() {
               {isBuyerView ? "Buyer View" : "Seller View"}
             </Toggle>
           </div>
-
           <Card className="mb-8 bg-white shadow-lg border-t-4 border-green-500">
             <CardHeader>
               <CardTitle className="flex items-center text-green-600">
-                <DollarSign className="w-6 h-6 mr-2" />
                 Your Balance
               </CardTitle>
             </CardHeader>
@@ -189,81 +148,108 @@ export function EnergyCertificateMarketplaceComponent() {
               <Progress value={(balance / 2000) * 100} className="mt-2 h-2 bg-green-200" />
             </CardContent>
           </Card>
-
           {isBuyerView ? (
-            <Card className="bg-white shadow-lg border-t-4 border-blue-500">
-              <CardHeader>
-                <CardTitle className="flex items-center text-blue-600">
-                  <Search className="w-6 h-6 mr-2" />
-                  Search Energy Certificates
-                </CardTitle>
-                <CardDescription>Find and purchase renewable energy certificates</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSearch} className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      type="text"
-                      placeholder="Search certificates..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex-grow border-blue-300 focus:ring-blue-500"
-                    />
-                    <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                      <Search className="w-4 h-4 mr-2" />
-                      Search
-                    </Button>
-                  </div>
-                </form>
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between items-center p-2 bg-yellow-100 rounded border border-yellow-300">
-                    <div className="flex items-center">
-                      <Sun className="w-6 h-6 mr-2 text-yellow-500" />
-                      <div>
-                        <h3 className="font-semibold text-yellow-700">Solar Energy Certificate</h3>
-                        <p className="text-sm text-yellow-600">1000 kWh</p>
-                      </div>
+            <>
+              <Card className="mb-8 bg-white shadow-lg border-t-4 border-blue-500">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-blue-600">
+                    Search Energy Certificates
+                  </CardTitle>
+                  <CardDescription>Find and purchase renewable energy certificates</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSearch} className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="text"
+                        placeholder="Search certificates..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-grow border-blue-300 focus:ring-blue-500"
+                      />
+                      <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
+                        Search
+                      </Button>
                     </div>
-                    <Button onClick={handlePurchase} className="bg-yellow-500 hover:bg-yellow-600">Purchase $100</Button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 bg-blue-100 rounded border border-blue-300">
-                    <div className="flex items-center">
-                      <Wind className="w-6 h-6 mr-2 text-blue-500" />
-                      <div>
-                        <h3 className="font-semibold text-blue-700">Wind Energy Certificate</h3>
-                        <p className="text-sm text-blue-600">800 kWh</p>
+                  </form>
+                  <div className="mt-4 space-y-4">
+                    {certificates.map((cert) => (
+                      <div key={cert.type} className={`p-4 bg-${cert.color}-100 rounded border border-${cert.color}-300`}>
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className={`font-semibold text-${cert.color}-700`}>{cert.name}</h3>
+                          <p className={`text-sm text-${cert.color}-600`}>{cert.count} available</p>
+                        </div>
+                        <div className="mb-2">
+                          <Label htmlFor={`${cert.type}-slider`}>Number of certificates to buy: {cert.toBuy}</Label>
+                          <Slider
+                            id={`${cert.type}-slider`}
+                            min={0}
+                            max={cert.count}
+                            step={1}
+                            value={[cert.toBuy]}
+                            onValueChange={(value) => handleSliderChange(cert.type, value)}
+                            className="mt-2"
+                          />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <p className={`text-sm text-${cert.color}-600`}>Total: ${(cert.price * cert.toBuy).toFixed(2)}</p>
+                          <Button 
+                            onClick={() => handlePurchase(cert.type)} 
+                            className={`bg-${cert.color}-500 hover:bg-${cert.color}-600`}
+                            disabled={cert.toBuy === 0 || balance < cert.price * cert.toBuy}
+                          >
+                            Purchase {cert.toBuy} for ${(cert.price * cert.toBuy).toFixed(2)}
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                    <Button onClick={handlePurchase} className="bg-blue-500 hover:bg-blue-600">Purchase $80</Button>
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+              <Card className="bg-white shadow-lg border-t-4 border-purple-500">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-purple-600">
+                    Your Purchased Certificates
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {purchasedCertificates.length > 0 ? (
+                    <ul className="space-y-2">
+                      {purchasedCertificates.map((cert, index) => (
+                        <li key={index} className="flex justify-between items-center p-2 bg-purple-100 rounded">
+                          <span>{cert.name}</span>
+                          <span className="font-semibold">{cert.count}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">You haven't purchased any certificates yet.</p>
+                  )}
+                </CardContent>
+              </Card>
+            </>
           ) : (
             <Card className="bg-white shadow-lg border-t-4 border-purple-500">
               <CardHeader>
                 <CardTitle className="flex items-center text-purple-600">
-                  <Zap className="w-6 h-6 mr-2" />
                   Upload Renewable Energy Certificate
                 </CardTitle>
                 <CardDescription>Upload your document for evaluation and payout</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
                   <div className="grid w-full items-center gap-4">
                     <div className="flex flex-col space-y-1.5">
                       <Label htmlFor="document" className="text-purple-700">Document</Label>
                       <Input id="document" type="file" onChange={handleFileChange} className="border-purple-300 focus:ring-purple-500" />
                     </div>
                   </div>
-                  <Button className="w-full bg-purple-500 hover:bg-purple-600" onClick={handleSubmit} disabled={uploading}>
+                  <Button className="w-full bg-purple-500 hover:bg-purple-600" type="submit" disabled={uploading}>
                     {uploading ? 'Uploading...' : 'Upload Document'}
-                    <Upload className="w-4 h-4 ml-2" />
                   </Button>
                 </form>
                 {error && (
                   <Alert variant="destructive" className="mt-4 bg-red-100 border-red-300 text-red-800">
-                    <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
@@ -273,7 +259,7 @@ export function EnergyCertificateMarketplaceComponent() {
                     <AlertTitle>Evaluation Result</AlertTitle>
                     <AlertDescription>
                       Document Type: {evaluation.type}<br />
-                      Payout Amount: ${evaluation.payout.toFixed(2)}
+                      Payout Amount: ${evaluation.value.toFixed(2)}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -283,5 +269,5 @@ export function EnergyCertificateMarketplaceComponent() {
         </div>
       </div>
     </div>
-  )
+  );
 }
