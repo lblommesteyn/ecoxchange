@@ -5,9 +5,7 @@ import { EnergyCertificateMarketplaceComponent } from './energy-certificate-mark
 // const root = ReactDOM.createRoot(document.getElementById("root"));
 const root = createRoot(document.getElementById("root")!);
 root.render(
-    <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL!}>
-        <EnergyCertificateMarketplaceComponent />
-    </AuthProvider>
+    <EnergyCertificateMarketplaceComponent />
     // document.getElementById("root")
 );
 
