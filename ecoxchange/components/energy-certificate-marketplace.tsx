@@ -35,8 +35,8 @@ export function EnergyCertificateMarketplaceComponent() {
     // async function whoAmI(accessToken) {
     
     const params = new URLSearchParams({
-      redirect_uri: `https://auth.ecoxchange.live/oidc`,
-      client_id: `230496154`,
+      redirect_uri: `https://ecoxchange.live/oidc`,
+      client_id: `e51618d73ab9c59f5bd04cda1f667e17`,
       response_type: `code`,
       state: `hello`,
     });
