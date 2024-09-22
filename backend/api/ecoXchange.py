@@ -13,8 +13,8 @@ CORS(app)
 def hello_world():
     return "<p>Hello, World!</p>" 
 
-from backend.api.mongo import db
-from backend.api.mongo import certificate_collection
+from mongo import db
+from mongo import certificate_collection
 
 
 @app.route("/certificate", methods=['POST','GET'])

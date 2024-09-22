@@ -25,8 +25,11 @@ dnspython==2.6.1
 flask==3.0.3
     # via
     #   -r requirements.in
+    #   flask-cors
     #   flask-pymongo
     #   propelauth-flask
+flask-cors==5.0.0
+    # via -r requirements.in
 flask-pymongo==2.3.0
     # via -r requirements.in
 idna==3.10

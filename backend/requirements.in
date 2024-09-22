@@ -3,3 +3,4 @@ flask_pymongo
 dnspython
 certifi
 propelauth_flask
+flask_cors
